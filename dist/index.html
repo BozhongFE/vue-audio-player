@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>vue-audio-player</title>
+    <style>
+      #app {
+        max-width: 400px;
+        margin: 0 auto;
+        border: 1px solid #eee;
+      }
+      ul {
+        margin: 20px 0;
+        overflow: hidden;
+      }
+      li {
+        padding: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div>
+        <audio-player
+          ref="player"
+          :audio="src"
+          :img="background"
+        ></audio-player>
+        <ul style="margin-top: 40px; overflow: hidden;">
+          <li @click="select(item)" v-for="(item, index) of list" v-html="item.name"></li>
+        </ul>
+      </div>
+    </div>
+    <script src="https://cdn.bootcss.com/vue/2.5.9/vue.min.js"></script>
+    <script src="./audio-player.min.js"></script>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        components: {
+          AudioPlayer: AudioPlayer,
+        },
+        data: {
+          src: '',
+          background: '',
+          list: [
+            {
+              name: 'Sleep Alone - 陈奕迅',
+              img: 'http://p1.music.126.net/RZYcdHXGZGDhZe2RDpDYbA==/8933531975768019.jpg?param=375y375',
+              audio: 'https://source.unclay.com/mp3/sleep_alone.mp3',
+            },
+            {
+              name: 'PTL - Relient K',
+              img: 'http://p1.music.126.net/BrfkYrL_72MYpr47lM-yGg==/4438728441342364.jpg?param=375y375',
+              audio: 'http://source.unclay.com/mp3/ptl.mp3',
+            },
+            {
+              name: 'Cykler - Gustaf Spetz',
+              img: 'http://p1.music.126.net/1sfWmWgXgHnPo5Os_-XUaQ==/18714787418297440.jpg?param=375y375',
+              audio: 'http://source.unclay.com/mp3/cykler.mp3',
+            },
+          ]
+        },
+        mounted: function () {
+          this.src = this.list[0].audio;
+          this.background = this.list[0].img;
+        },
+        methods: {
+          select: function (item) {
+            var self = this;
+            self.src = item.audio;
+            self.background = item.img;
+            self.$nextTick(function () {
+              self.$refs.player.play();
+            })
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
