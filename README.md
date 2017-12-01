@@ -22,7 +22,13 @@ npm install
 npm run dev
 
 # build for production with minification
+npm run build:demo
+
+# build dist/*.js
 npm run build
+
+# build to bz
+npm run build:moe
 ```
 
 ## Install
