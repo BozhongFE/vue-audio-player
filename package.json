@@ -6,7 +6,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host 192.168.80.102",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "dev:wcl": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host 192.168.80.102",
+    "dev:xc": "cross-env NODE_ENV=development webpack-dev-server --open --hot --host 192.168.80.106",
     "build:demo": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build": "node build/build.js",
     "build:moe": "node build/build.moe.js"

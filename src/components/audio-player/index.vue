@@ -5,24 +5,43 @@
       <img class="audio-bg--img" :src="img" alt="" />
     </div>
     <div class="audio-bar">
-      <div class="audio-bar__time" v-html="timeFormatter(currentTime)"></div>
       <div @touchmove="_barTouchmove($event)" @touchend="_barTouchend($event)" class="audio-bar__progress">
         <div v-show="!loaded" class="small-loading audio-bar__loading"></div>
         <div class="audio-bar__progress-box">
           <div class="audio-bar__progress--bg"></div>
-          <div class="audio-bar__progress--now" :style="{ width: currentTime/duration*progressWidth + 'px' }"></div>
+          <div class="audio-bar__progress--now" :class="{'loaded': loaded}" :style="{ width: currentTime/duration*100 + '%' }"></div>
         </div>
       </div>
+      <div class="audio-bar__time" v-html="timeFormatter(currentTime)"></div>
       <div @click="_audioPlay" :class="['audio-bar__btn', { 'play': !playing, 'pause': playing }]">
       </div>
     </div>
     <div class="audio-bar">
-      
+
     </div>
   </div>
 </template>
 
 <script>
+// rem
+(function(scope){
+  // 下面750对应设计稿的宽度
+  // document.body.innerHTML = window.innerWidth;
+  var ua = navigator.userAgent.toLocaleLowerCase();
+  var eventName = 'onorientationchange' in scope ? 'orientationchange' : 'resize';
+  var howLong = /chrome|firefox|ucbrowser|mqqbrowser/.test(ua) || (/safari/.test(ua) && /iphone/.test(ua)) ? 0 : 300;
+  var winWidth = document.documentElement.clientWidth;
+  var docWidth = window.innerWidth;
+  var _width = winWidth < docWidth ? winWidth : docWidth; // 兼容部分奇怪的安卓机
+  document.documentElement.style.fontSize = (_width / 750 * 40) + 'px';
+  scope.addEventListener(eventName, function(){
+    clearTimeout(scope.orientationChangedTimeout);
+    scope.orientationChangedTimeout = setTimeout(function(){
+      document.documentElement.style.fontSize = (_width / 750 * 40) + 'px';
+    }, howLong);
+  }, false);
+}(window));
+
 export default {
   name: 'audio-player',
   data () {
@@ -54,8 +73,8 @@ export default {
         }
         const hour = timeFormat(Math.floor(time / 3600));
         const minute = timeFormat(Math.floor(time /60 % 60));
-        const second = timeFormat(time % 3600 % 60);
-        return `${minute}:${second}`
+        const second = timeFormat(Math.floor(time % 3600 % 60));
+        return `${hour}:${minute}:${second}`
       }
     },
   },
@@ -68,27 +87,28 @@ export default {
     }
   },
   mounted () {
-    this.$nextTick(() => {
+    const self = this;
+    self.$nextTick(() => {
       // 初始化背景图宽高
-      this.boxWidth = this.$el.clientWidth
-      this.$elProgress = this.$el.querySelector('.audio-bar__progress')
-      this.progressWidth = this.$elProgress.clientWidth
+      self.boxWidth = self.$el.clientWidth
+      self.$elProgress = self.$el.querySelector('.audio-bar__progress')
+      self.progressWidth = self.$elProgress.clientWidth
       // 初始化音频总时长
-      this.$elAudio = this.$el.querySelector('.audio-player--audio')
-      this.$elAudio.addEventListener('durationchange', () => {
-        this.duration = this.$elAudio.duration
-        this.audioInterval = setInterval(() => {
-          if (!this.touching) {
-            this.currentTime = Math.ceil(this.$elAudio.currentTime);
+      self.$elAudio = self.$el.querySelector('.audio-player--audio')
+      self.$elAudio.addEventListener('durationchange', () => {
+        self.duration = self.$elAudio.duration
+        self.audioInterval = setInterval(() => {
+          if (!self.touching) {
+            self.currentTime = Math.ceil(self.$elAudio.currentTime);
           }
         }, 1000)
       }, false)
-      this.$elAudio.addEventListener('canplaythrough', () => {
-        clearTimeout(this.loadedTimeout)
-        this.loaded = true
+      self.$elAudio.addEventListener('canplaythrough', () => {
+        clearTimeout(self.loadedTimeout)
+        self.loaded = true
       }, false)
-      this.$elAudio.addEventListener('pause', () => {
-        this.playing = false
+      self.$elAudio.addEventListener('pause', () => {
+        self.playing = false
       }, false)
     })
   },
@@ -97,7 +117,10 @@ export default {
       this.touching = true;
       const target = e.changedTouches[0]
       const diff = target.clientX - this.$elProgress.offsetLeft;
-      const currentTime = Math.floor(diff / this.progressWidth * this.duration);
+      let currentTime = Math.floor(diff / this.progressWidth * this.duration);
+      if (currentTime > this.duration) {
+        currentTime = this.duration
+      }
       this.currentTime = currentTime
     },
     _barTouchend(e) {
@@ -137,12 +160,11 @@ export default {
 }
 </script>
 
-<style>
-* {
-  margin: 0;
-}
+<style scoped>
+/* 所有rem x 40 = 设计稿尺寸*/
 .audio-player {
   position: relative;
+  background-color: #fff;
 }
 .audio-player--audio {
   display: none;
@@ -163,24 +185,26 @@ export default {
   left: 0;
   right: 0;
   display: flex;
+  align-items: center;
+  padding: 0 1rem;
 }
 .audio-bar__time {
-  padding: 0 20px 0 20px;
+  margin-left: 1.05rem;
   color: #eee;
-  height: 36px;
-  line-height: 36px;
+  /*line-height: 36px;*/
+  font-size: 0.6rem;
 }
 .audio-bar__progress {
   position: relative;
   flex: 1;
-  margin: 10px 20px 10px 0;
-  border-radius: 2px;
+  margin: 0.925rem 0;
+  height: 0.45rem;
 }
 .audio-bar__loading {
   position: absolute;
   z-index: 1;
-  left: -15px;
-  top: 0px;
+  left: -0.375rem;
+  top: 0;
 }
 .audio-bar__progress-box {
   position: absolute;
@@ -188,27 +212,38 @@ export default {
   left: 0;
   right: 0;
   transform: translateY(-50%);
-  border-radius: 4px;
-  overflow: hidden;
 }
 .audio-bar__progress--bg {
-  height: 4px;
+  height: 0.125rem;
   background-color: #777;
+  border-radius: 0.0625rem;
 }
 .audio-bar__progress--now {
   position: absolute;
   top: 0;
   left: 0;
   width: 0;
-  height: 4px;
+  height: 0.125rem;
+  background-color: #fff;
+  border-radius: 0.0625rem;
+}
+.audio-bar__progress--now.loaded:after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
   background-color: #fff;
 }
 .audio-bar__btn {
   position: absolute;
-  left: 20px;
-  bottom: 40px;
-  width: 40px;
-  height: 40px;
+  left: 1rem;
+  bottom: 2.3rem;
+  width: 2rem;
+  height: 2rem;
   color: #fff;
   -webkit-tap-highlight-color: transparent;
 }
@@ -221,8 +256,8 @@ export default {
   background-size: 100% 100%;
 }
 .small-loading {
-  width: 16px;
-  height: 16px;
+  width: 0.4rem;
+  height: 0.4rem;
   display: inline-block;
   vertical-align: middle;
   -webkit-animation: weuiLoading 1s steps(12, end) infinite;
