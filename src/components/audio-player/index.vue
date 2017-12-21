@@ -12,7 +12,7 @@
           <div class="audio-bar__progress--now" :class="{'loaded': loaded}" :style="{ width: currentTime/duration*100 + '%' }"></div>
         </div>
       </div>
-      <div class="audio-bar__time" v-html="timeFormatter(currentTime)"></div>
+      <div class="audio-bar__time" v-html="timeFormatter(condown ? (totalTime ||0 ) : currentTime)"></div>
       <div @click="_audioPlay" :class="['audio-bar__btn', { 'play': !playing, 'pause': playing }]">
       </div>
     </div>
@@ -47,12 +47,13 @@ export default {
   data () {
     return {
       duration: 0,
+      totalTime:0,
       currentTime: 0,
       boxWidth: 0,
       progressWidth: 0,
       touching: false,
       playing: false,
-      loaded: false,
+      loaded: true,
     }
   },
   props: {
@@ -64,6 +65,7 @@ export default {
     },
     width: Number,
     height: Number,
+    condown: Boolean,
     timeFormatter: {
       type: Function,
       default (time) {
@@ -80,10 +82,8 @@ export default {
   },
   watch: {
     audio(val) {
-      this.loadedTimeout = setTimeout(() => {
-        this.loaded = false
-      }, 100)
-      this.currentTime = this.$elAudio.currentTime = 0
+      const self = this;
+      this.currentTime = this.$elAudio.currentTime = 0;
     }
   },
   mounted () {
@@ -100,11 +100,12 @@ export default {
         self.audioInterval = setInterval(() => {
           if (!self.touching) {
             self.currentTime = Math.ceil(self.$elAudio.currentTime);
+            if (self.currentTime > 0) self.loaded = true;
+            if (self.condown) self.totalTime = Math.ceil(self.$elAudio.duration) - self.currentTime;
           }
         }, 1000)
       }, false)
       self.$elAudio.addEventListener('canplaythrough', () => {
-        clearTimeout(self.loadedTimeout)
         self.loaded = true
       }, false)
       self.$elAudio.addEventListener('pause', () => {
@@ -145,6 +146,7 @@ export default {
       if (this.$elAudio.paused) {
         this.$elAudio.play();
         this.playing = !this.$elAudio.paused;
+        if (this.currentTime === 0) this.loaded = false;
       }
     },
     pause() {

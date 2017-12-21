@@ -5,8 +5,10 @@
         ref="player"
         :audio="src"
         :img="background"
+        :condown="condown"
       ></audio-player>
     </div>
+    <div class="tool"><label for="input"><input id="input" v-model="checkbox" @change="checkboxFn" class="input-check" type="checkbox">剩余时长改成倒计时</label></div>
     <ul>
       <li @click="select(item)" v-for="(item, index) of list" v-html="item.name"></li>
     </ul>
@@ -24,6 +26,8 @@ export default {
     return {
       src: '',
       background: '',
+      condown:false,
+      checkbox:'',
       list: [
         {
           name: 'Sleep Alone - 陈奕迅',
@@ -54,6 +58,12 @@ export default {
       this.$nextTick(() => {
         this.$refs.player.play()
       })
+    },
+    checkboxFn(){
+      this.condown =this.checkbox
+      this.$nextTick(() => {
+        this.$refs.player.play()
+      })
     }
   }
 }
@@ -71,5 +81,14 @@ export default {
   }
   li {
     padding: 4px 0;
+  }
+  .tool {
+    background:#f2f2f2;
+    padding:5px;
+    text-align:right;
+    font-size:12px;
+  }
+  .input-check {
+    vertical-align: middle;
   }
 </style>
