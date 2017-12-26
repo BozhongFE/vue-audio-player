@@ -5,7 +5,7 @@
         ref="player"
         :audio="src"
         :img="background"
-        :condown="condown"
+        :countdown="countdown"
       ></audio-player>
     </div>
     <div class="tool"><label for="input"><input id="input" v-model="checkbox" @change="checkboxFn" class="input-check" type="checkbox">剩余时长改成倒计时</label></div>
@@ -26,7 +26,7 @@ export default {
     return {
       src: '',
       background: '',
-      condown:false,
+      countdown:false,
       checkbox:'',
       list: [
         {
@@ -60,7 +60,7 @@ export default {
       })
     },
     checkboxFn(){
-      this.condown =this.checkbox
+      this.countdown =this.checkbox
       this.$nextTick(() => {
         this.$refs.player.play()
       })

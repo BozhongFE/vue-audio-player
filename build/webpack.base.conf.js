@@ -1,5 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
+var autoprefixer = require('autoprefixer')
 
 module.exports = {
   entry: './src/main.js',
@@ -16,16 +17,19 @@ module.exports = {
           'vue-style-loader',
           'css-loader'
         ],
-      },      {
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
           loaders: {
+            less: 'style-loader!css-loader?-autoprefixer!less-loader'
           },
+          postcss: [autoprefixer({
+            // browsers: ['> 3%', 'last 3 versions', 'ie >= 9', 'iOS >= 7', 'Android >= 4.0'],
+            browsers: ['iOS >= 8', 'Android >= 4.1'],
+          })],
           // other vue-loader options go here
-          transformToRequire: {
-            "audio": "src"
-          }
         }
       },
       {
@@ -57,25 +61,4 @@ module.exports = {
     hints: false
   },
   devtool: '#eval-source-map',
-}
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
 }
