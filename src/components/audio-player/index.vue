@@ -5,14 +5,14 @@
       <img class="audio-bg--img" :src="img" alt="" />
     </div>
     <div class="audio-bar">
-      <div @touchmove="_barTouchmove($event)" @touchend="_barTouchend($event)" class="audio-bar__progress">
+      <div @touchmove.prevent="_barTouchmove($event)" @touchend.prevent="_barTouchend($event)" class="audio-bar__progress">
         <div v-show="!loaded" class="small-loading audio-bar__loading"></div>
         <div class="audio-bar__progress-box">
           <div class="audio-bar__progress--bg"></div>
           <div class="audio-bar__progress--now" :class="{'loaded': loaded}" :style="{ width: currentTime/duration*100 + '%' }"></div>
         </div>
       </div>
-      <div class="audio-bar__time" v-html="timeFormatter(condown ? (totalTime ||0 ) : currentTime)"></div>
+      <div class="audio-bar__time" v-html="timeFormatter(countdown ? duration - currentTime : currentTime)"></div>
       <div @click="_audioPlay" :class="['audio-bar__btn', { 'play': !playing, 'pause': playing }]">
       </div>
     </div>
@@ -47,7 +47,6 @@ export default {
   data () {
     return {
       duration: 0,
-      totalTime:0,
       currentTime: 0,
       boxWidth: 0,
       progressWidth: 0,
@@ -65,7 +64,11 @@ export default {
     },
     width: Number,
     height: Number,
-    condown: Boolean,
+    countdown: Boolean,
+    setDuration:{
+      type:Number,
+      default:0
+    },
     timeFormatter: {
       type: Function,
       default (time) {
@@ -96,18 +99,17 @@ export default {
       // 初始化音频总时长
       self.$elAudio = self.$el.querySelector('.audio-player--audio')
       self.$elAudio.addEventListener('durationchange', () => {
-        self.duration = self.$elAudio.duration
+        self.duration = self.setDuration || self.$elAudio.duration
         self.audioInterval = setInterval(() => {
           if (!self.touching) {
             self.currentTime = Math.ceil(self.$elAudio.currentTime);
             if (self.currentTime > 0) self.loaded = true;
-            if (self.condown) self.totalTime = Math.ceil(self.$elAudio.duration) - self.currentTime;
           }
         }, 1000)
       }, false)
       self.$elAudio.addEventListener('canplaythrough', () => {
         self.loaded = true
-      }, false)
+      }, false) 
       self.$elAudio.addEventListener('pause', () => {
         self.playing = false
       }, false)

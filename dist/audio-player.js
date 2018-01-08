@@ -1,6 +1,6 @@
 /*!
  * audio-player v0.1.0
- * (c) 2017-2017 Clay
+ * (c) 2017-2018 Clay
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -49,13 +49,12 @@ __$styleInject("\r\n/* 所有rem x 40 = 设计稿尺寸*/\r\n.audio-player {\r\n
 }(window));
 
 var AudioPlayer$1 = {
-render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"audio-player",style:({ width: _vm.width + 'px', height: (_vm.height || _vm.boxWidth) + 'px' })},[_c('audio',{staticClass:"audio-player--audio",attrs:{"controls":"","title":"sleep_alone","meta":"sleep_alone","src":_vm.audio}}),_vm._v(" "),_c('div',{staticClass:"audio-bg"},[_c('img',{staticClass:"audio-bg--img",attrs:{"src":_vm.img,"alt":""}})]),_vm._v(" "),_c('div',{staticClass:"audio-bar"},[_c('div',{staticClass:"audio-bar__progress",on:{"touchmove":function($event){_vm._barTouchmove($event);},"touchend":function($event){_vm._barTouchend($event);}}},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.loaded),expression:"!loaded"}],staticClass:"small-loading audio-bar__loading"}),_vm._v(" "),_c('div',{staticClass:"audio-bar__progress-box"},[_c('div',{staticClass:"audio-bar__progress--bg"}),_vm._v(" "),_c('div',{staticClass:"audio-bar__progress--now",class:{'loaded': _vm.loaded},style:({ width: _vm.currentTime/_vm.duration*100 + '%' })})])]),_vm._v(" "),_c('div',{staticClass:"audio-bar__time",domProps:{"innerHTML":_vm._s(_vm.timeFormatter(_vm.condown ? (_vm.totalTime ||0 ) : _vm.currentTime))}}),_vm._v(" "),_c('div',{class:['audio-bar__btn', { 'play': !_vm.playing, 'pause': _vm.playing }],on:{"click":_vm._audioPlay}})]),_vm._v(" "),_c('div',{staticClass:"audio-bar"})])},
+render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"audio-player",style:({ width: _vm.width + 'px', height: (_vm.height || _vm.boxWidth) + 'px' })},[_c('audio',{staticClass:"audio-player--audio",attrs:{"controls":"","title":"sleep_alone","meta":"sleep_alone","src":_vm.audio}}),_vm._v(" "),_c('div',{staticClass:"audio-bg"},[_c('img',{staticClass:"audio-bg--img",attrs:{"src":_vm.img,"alt":""}})]),_vm._v(" "),_c('div',{staticClass:"audio-bar"},[_c('div',{staticClass:"audio-bar__progress",on:{"touchmove":function($event){_vm._barTouchmove($event);},"touchend":function($event){_vm._barTouchend($event);}}},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.loaded),expression:"!loaded"}],staticClass:"small-loading audio-bar__loading"}),_vm._v(" "),_c('div',{staticClass:"audio-bar__progress-box"},[_c('div',{staticClass:"audio-bar__progress--bg"}),_vm._v(" "),_c('div',{staticClass:"audio-bar__progress--now",class:{'loaded': _vm.loaded},style:({ width: _vm.currentTime/_vm.duration*100 + '%' })})])]),_vm._v(" "),_c('div',{staticClass:"audio-bar__time",domProps:{"innerHTML":_vm._s(_vm.timeFormatter(_vm.countdown ? _vm.duration - _vm.currentTime : _vm.currentTime))}}),_vm._v(" "),_c('div',{class:['audio-bar__btn', { 'play': !_vm.playing, 'pause': _vm.playing }],on:{"click":_vm._audioPlay}})]),_vm._v(" "),_c('div',{staticClass:"audio-bar"})])},
 staticRenderFns: [],
   name: 'audio-player',
   data: function data () {
     return {
       duration: 0,
-      totalTime:0,
       currentTime: 0,
       boxWidth: 0,
       progressWidth: 0,
@@ -73,7 +72,11 @@ staticRenderFns: [],
     },
     width: Number,
     height: Number,
-    condown: Boolean,
+    countdown: Boolean,
+    setDuration:{
+      type:Number,
+      default:0
+    },
     timeFormatter: {
       type: Function,
       default: function default$1 (time) {
@@ -95,7 +98,6 @@ staticRenderFns: [],
   },
   mounted: function mounted () {
     var self = this;
-    console.log(self.loaded);
     self.$nextTick(function () {
       // 初始化背景图宽高
       self.boxWidth = self.$el.clientWidth;
@@ -104,18 +106,17 @@ staticRenderFns: [],
       // 初始化音频总时长
       self.$elAudio = self.$el.querySelector('.audio-player--audio');
       self.$elAudio.addEventListener('durationchange', function () {
-        self.duration = self.$elAudio.duration;
+        self.duration = self.setDuration || self.$elAudio.duration;
         self.audioInterval = setInterval(function () {
           if (!self.touching) {
             self.currentTime = Math.ceil(self.$elAudio.currentTime);
             if (self.currentTime > 0) { self.loaded = true; }
-            if (self.condown) { self.totalTime = Math.ceil(self.$elAudio.duration) - self.currentTime; }
           }
         }, 1000);
       }, false);
       self.$elAudio.addEventListener('canplaythrough', function () {
         self.loaded = true;
-      }, false);
+      }, false); 
       self.$elAudio.addEventListener('pause', function () {
         self.playing = false;
       }, false);

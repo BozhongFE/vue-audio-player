@@ -102,6 +102,8 @@ export default {
 |img|String||background's src|
 |width|Number|null|player's width|
 |height|Number|null|player's width|
+|countdown|Boolean|false|player's countdown|
+|setDuration|Number|0|The total length of incoming external audio|
 |timeFormatter|Function|xx:xx|time format|
 
 ## Events
