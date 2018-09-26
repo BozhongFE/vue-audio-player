@@ -6,6 +6,7 @@
         :audio="src"
         :img="background"
         :countdown="countdown"
+        :set-duration="duration"
       ></audio-player>
     </div>
     <div class="tool"><label for="input"><input id="input" v-model="checkbox" @change="checkboxFn" class="input-check" type="checkbox">剩余时长改成倒计时</label></div>
@@ -27,22 +28,26 @@ export default {
       src: '',
       background: '',
       countdown:false,
+      duration:0,
       checkbox:'',
       list: [
         {
           name: 'Sleep Alone - 陈奕迅',
           img: 'http://p1.music.126.net/RZYcdHXGZGDhZe2RDpDYbA==/8933531975768019.jpg?param=375y375',
           audio: 'https://source.unclay.com/mp3/sleep_alone.mp3',
+          duration:146,
         },
         {
           name: 'PTL - Relient K',
           img: 'http://p1.music.126.net/BrfkYrL_72MYpr47lM-yGg==/4438728441342364.jpg?param=375y375',
           audio: 'http://source.unclay.com/mp3/ptl.mp3',
+          duration:0,
         },
         {
           name: 'Cykler - Gustaf Spetz',
           img: 'http://p1.music.126.net/1sfWmWgXgHnPo5Os_-XUaQ==/18714787418297440.jpg?param=375y375',
           audio: 'http://source.unclay.com/mp3/cykler.mp3',
+          duration:0,
         },
       ]
     }
@@ -50,11 +55,13 @@ export default {
   mounted() {
     this.src = this.list[0].audio;
     this.background = this.list[0].img;
+    this.duration = this.list[0].duration;
   },
   methods: {
     select(item) {
       this.src = item.audio;
       this.background = item.img;
+      this.duration = item.duration;
       this.$nextTick(() => {
         this.$refs.player.play()
       })

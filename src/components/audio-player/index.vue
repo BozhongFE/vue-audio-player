@@ -5,7 +5,7 @@
       <img class="audio-bg--img" :src="img" alt="" />
     </div>
     <div class="audio-bar">
-      <div @touchmove="_barTouchmove($event)" @touchend="_barTouchend($event)" class="audio-bar__progress">
+      <div @touchmove.prevent="_barTouchmove($event)" @touchend.prevent="_barTouchend($event)" class="audio-bar__progress">
         <div v-show="!loaded" class="small-loading audio-bar__loading"></div>
         <div class="audio-bar__progress-box">
           <div class="audio-bar__progress--bg"></div>
@@ -50,7 +50,6 @@ export default {
   data () {
     return {
       duration: 0,
-      // totalTime:0,
       currentTime: 0,
       boxWidth: 0,
       progressWidth: 0,
@@ -69,6 +68,10 @@ export default {
     width: Number,
     height: Number,
     countdown: Boolean,
+    setDuration:{
+      type:Number,
+      default:0
+    },
     timeFormatter: {
       type: Function,
       default (time) {
@@ -158,7 +161,7 @@ export default {
       // 初始化音频总时长
       self.$elAudio = self.$el.querySelector('.audio-player--audio')
       self.$elAudio.addEventListener('durationchange', () => {
-        self.duration = self.$elAudio.duration
+        self.duration = self.$elAudio.duration || self.$elAudio.duration
         self.audioInterval = setInterval(() => {
           if (!self.touching) {
             self.currentTime = Math.ceil(self.$elAudio.currentTime);
