@@ -103,6 +103,8 @@ export default {
 |width|Number|null|player's width|
 |height|Number|null|player's width|
 |countdown|Boolean|false|player's countdown|
+|showTotal|Boolean|false|show audio total time|
+|formatterTime|Boolean|false|show audio time formatter's minute and second|
 |setDuration|Number|0|The total length of incoming external audio|
 |timeFormatter|Function|xx:xx|time format|
 
@@ -112,6 +114,15 @@ export default {
 |-----|----|
 |play|this.$refs.player.play()|
 |pause|this.$refs.player.pause()|
+
+## 开发版本日志
+
+|#|版本号|日期|版本内容|
+|---|---|---|---|
+|#|0.1.0|20171221| v0.1.0发布
+|#|1.0.0|20171226| 更换打包配置，增加事件回调，部分细节更改
+|#|0.1.0|20180108| 添加时长字段，可外部传入(解决安卓4.4.2手机，前端获取不到音频时长问题)
+|#|1.1.0|20180927| 合并0.1.0分支，添加显示总时长及时长格式
 
 ## License
 

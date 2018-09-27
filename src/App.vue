@@ -7,9 +7,15 @@
         :img="background"
         :countdown="countdown"
         :set-duration="duration"
+        :showTotal="checkTotal"
+        :formatterTime= "checkFormatter"
       ></audio-player>
     </div>
-    <div class="tool"><label for="input"><input id="input" v-model="checkbox" @change="checkboxFn" class="input-check" type="checkbox">剩余时长改成倒计时</label></div>
+    <div class="tool">
+      <label for="formatter"><input id="formatter" v-model="checkFormatter" @change="checkFormatterFn" class="input-check" type="checkbox">只显示分秒</label>
+      <label for="total"><input id="total" v-model="checkTotal" @change="checkTotalFn" class="input-check" type="checkbox">是否显示总时长</label>
+      <label for="input"><input id="input" v-model="checkbox" @change="checkboxFn" class="input-check" type="checkbox">剩余时长改成倒计时</label>
+    </div>
     <ul>
       <li @click="select(item)" v-for="(item, index) of list" v-html="item.name"></li>
     </ul>
@@ -29,7 +35,9 @@ export default {
       background: '',
       countdown:false,
       duration:0,
-      checkbox:'',
+      checkbox: false,
+      checkTotal: false,
+      checkFormatter: false,
       list: [
         {
           name: 'Sleep Alone - 陈奕迅',
@@ -71,6 +79,12 @@ export default {
       this.$nextTick(() => {
         this.$refs.player.play()
       })
+    },
+    checkTotalFn() {
+      this.showTotal = this.checkTotal
+    },
+    checkFormatterFn() {
+      this.formatterTime = this.checkFormatter
     }
   }
 }

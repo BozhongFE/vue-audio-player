@@ -16,6 +16,10 @@
       <div class="audio-bar__time" v-html="timeFormatter(remainTime)" v-if="countdown"></div>
       <!-- 实际播放时长 -->
       <div class="audio-bar__time" v-html="timeFormatter(currentTime)" v-else></div>
+      <!-- 音频总时长 -->
+      <div class="audio-bar__progress--total" v-if="showTotal">
+        <span class="audio-bar__progress--line">/</span>{{timeFormatter(duration)}}
+      </div>
       <div @click="_audioPlay" :class="['audio-bar__btn', { 'play': !playing, 'pause': playing }]">
       </div>
     </div>
@@ -68,6 +72,8 @@ export default {
     width: Number,
     height: Number,
     countdown: Boolean,
+    showTotal: Boolean,
+    formatterTime: Boolean,
     setDuration:{
       type:Number,
       default:0
@@ -82,7 +88,11 @@ export default {
         const hour = timeFormat(Math.floor(time / 3600));
         const minute = timeFormat(Math.floor(time /60 % 60));
         const second = timeFormat(Math.floor(time % 3600 % 60));
-        return `${hour}:${minute}:${second}`
+        if (this.formatterTime) {
+          return `${minute}:${second}`;
+        } else {
+          return `${hour}:${minute}:${second}`;
+        }
       }
     },
   },
@@ -230,6 +240,10 @@ export default {
   color: #eee;
   /*line-height: 36px;*/
   font-size: 24*@rem;
+}
+.audio-bar__progress--total{
+  font-size: 0.6rem;
+  color: #eee;
 }
 .audio-bar__progress {
   position: relative;

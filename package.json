@@ -1,7 +1,7 @@
 {
   "name": "audio-player",
   "description": "vue audio player component",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Clay <wcl58981298@gmail.com>",
   "license": "MIT",
   "private": true,
